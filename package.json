@@ -6,8 +6,8 @@
   "scripts": {
     "build": "rimraf dist && babel src -d dist",
     "serve": "npm run build && node dist/index.js",
-	"precommit": "yarn run lint",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "precommit": "yarn run lint",
+    "test:e2e": "cucumber-js test/spec/cucumber/features --require-module @babel/register --require test/spec/cucumber/steps",
     "fix": "eslint src --fix",
     "lint": "eslint src",
     "watch": "nodemon -w src --exec yarn run serve"
@@ -31,6 +31,8 @@
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
+    "@babel/register": "^7.12.10",
+    "cucumber": "^7.0.0-rc.0",
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
