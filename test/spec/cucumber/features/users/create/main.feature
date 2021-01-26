@@ -27,3 +27,18 @@ Feature: the client sends a POST request to users with an payload that is not JS
     Examples:
     | payloadType   | statusCode    | message|
     | malformed     | 400           | "Payload should be in JSON format"|
+
+
+    Scenario Outline: Bad Request Payload
+
+    When the client creates a POST request to users
+    And attaches a Create User payload which is missing the <missingFields> fields
+    And sends the request
+    Then our API should respond with a 400 HTTP status code
+    And the payload of the response should be a JSON object
+    And contains a message property which says "Payload must contain at least the email and password fields"
+
+    Examples:
+    | missingFields |
+    | email |
+    | password |

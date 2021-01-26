@@ -38,12 +38,19 @@ app.use(checkContentTypeIsJson);
 app.use(bodyParser.json({ limit: 1e6 }));
 
 app.post('/', (req, res) => {
-    res.status(200);
-    res.set('Content-Type', 'application/json');
+    res.set('Content-Type', 'text/plain');
     res.json({ message: 'Hello, Nataliia, Dear!',});
 });
 
-app.post('/users', (req, res, next) => { next(); });
+// Inside the app.post('/users') callback
+app.post('/users', (req, res, next) => {
+    if (!Object.prototype.hasOwnProperty.call(req.body, 'email')|| !Object.prototype.hasOwnProperty.call(req.body, 'password')) {
+      res.status(400);
+      res.set('Content-Type', 'application/json');
+      res.json({ message: 'Payload must contain at least the email and password fields' });
+    }
+    next();
+});
 
 app.post('/users', (req, res) => {
   if (req.headers['content-length'] === '0') {
@@ -59,12 +66,6 @@ app.post('/users', (req, res) => {
     res.json({ message: 'The "Content-Type" header must always be "application/json"',});
     return;
   }
-
-  res.status(200);
-  res.set('Content-Type', 'application/json');
-  res.json({
-    message: 'Hello, Nataliia, Dear!(From users)'
-  });
 });
 
 app.use((err, req, res, next) => {
