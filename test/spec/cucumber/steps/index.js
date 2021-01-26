@@ -6,6 +6,14 @@ When('the client creates a POST request to users', function () {
 	this.request = superagent('POST', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
 });
 
+When('the client creates a PATCH request to users', function () {
+	this.request = superagent('PATCH', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
+});
+
+When('the client creates a PUT request to users', function () {
+	this.request = superagent('PUT', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
+});
+
 When(/^attaches a generic (.+) payload$/, function (payloadType) {
 	switch (payloadType) {
 		case 'malformed':
@@ -57,4 +65,8 @@ Then(/^contains a message property which says (?:"|')(.*)(?:"|')$/, function (me
 	if (this.responsePayload.message !== message) {
 		assert.equal(this.responsePayload.message, message);
 	}
+});
+
+When(/^without a (?:"|')([\w-]+)(?:"|') header set$/, function (headerName) {
+	this.request.unset(headerName);
 });
