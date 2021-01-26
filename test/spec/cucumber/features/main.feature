@@ -1,7 +1,7 @@
 
-Feature: the client creates a POST request to /users
+Feature: the client creates a POST request to users
     Scenario: Empty Payload
-    When the client creates a POST request to /users
+    When the client creates a POST request to users
     And attaches a generic empty payload
     And sends the request
     Then our API should respond with a 400 HTTP status code
