@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rimraf dist && babel src -d dist",
     "serve": "npm run build && node dist/index.js",
-	"precommit": "yarn run lint",
+    "precommit": "yarn run lint",
     "test": "echo \"Error: no test specified\" && exit 1",
     "fix": "eslint src --fix",
     "lint": "eslint src",
@@ -30,6 +30,7 @@
   "devDependencies": {
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",
