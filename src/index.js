@@ -1,6 +1,13 @@
 import '@babel/polyfill';
 import express from 'express';
 import bodyParser from 'body-parser';
+import elasticsearch from 'elasticsearch';
+
+const client = new elasticsearch.Client({
+  host:
+    `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
+});
+
 
 const app = express();
 
@@ -36,6 +43,7 @@ app.use(checkEmptyPayload);
 app.use(checkContentTypeIsSet);
 app.use(checkContentTypeIsJson);
 app.use(bodyParser.json({ limit: 1e6 }));
+
 
 app.post('/', (req, res) => {
     res.set('Content-Type', 'text/plain');
@@ -80,6 +88,24 @@ app.post('/users', (req, res) => {
     res.json({ message: 'The email field must be a valid email',});
     return;
   }
+  // add a data to the index that has already been created
+  client.index({
+    index: 'nodejstrainingproject',
+    type: 'user',
+    body: req.body,
+  }, function(error, response, status) {
+    if (error) {
+        console.log(error);
+        res.status(500);
+        res.set('Content-Type', 'application/json');
+        res.json({ message: 'Internal Server Error' });
+    } else {
+      res.status(201);
+      res.set('Content-Type', 'text/plain');
+      res.send(res._id);
+    }
+  });
+
 });
 
 app.use((err, req, res, next) => {

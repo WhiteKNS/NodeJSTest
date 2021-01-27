@@ -1,8 +1,15 @@
 import superagent from 'superagent';
 import { When, Then } from 'cucumber';
 import assert from 'assert'
+import elasticsearch from 'elasticsearch';
 
 import { getValidPayload, convertStringToArray } from './utils';
+
+const client = new elasticsearch.Client({
+	host:
+		`${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
+});
+
 
 When('the client creates a POST request to users', function () {
 	this.request = superagent('POST', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
@@ -49,17 +56,31 @@ Then(/^our API should respond with a ([1-5]\d{2}) HTTP status code$/, function (
 	assert.equal(this.response.statusCode, statusCode);
 });
 
-Then('the payload of the response should be a JSON object', function () {
+Then(/^the payload of the response should be an? ([a-zA-Z0-9, ]+)$/, function (payloadType) {
 	const contentType = this.response.headers['Content-Type'] || this.response.headers['content-type'];
 
-	if (!contentType || !contentType.includes('application/json')) {
-		throw new Error('Response not of Content-Type application/json');
-	}
-	// Check it is valid JSON
-	try {
-		this.responsePayload = JSON.parse(this.response.text);
-	} catch (e) {
-		throw new Error('Response not a valid JSON object');
+	if (payloadType === 'JSON object') {
+		if (!contentType || !contentType.includes('application/json')) {
+			throw new Error('Response not of Content-Type application/json');
+		}
+
+		// Check it is valid JSON
+		try {
+			this.responsePayload = JSON.parse(this.response.text);
+		} catch (e) {
+			throw new Error('Response not a valid JSON object');
+		}
+	} else if (payloadType === 'string') {
+		// Check Content-Type header
+		if (!contentType || !contentType.includes('text/plain')) {
+			throw new Error('Response not of Content-Type text/plain');
+		}
+
+		// Check it is a string
+		this.responsePayload = this.response.text;
+		if (typeof this.responsePayload !== 'string') {
+			throw new Error('Response not a string');
+		}
 	}
 });
 
@@ -119,4 +140,37 @@ When(/^attaches an? (.+) payload where the ([a-zA-Z0-9, ]+) fields? (?:is|are) e
 	this.request
 		.send(JSON.stringify(this.requestPayload))
 		.set('Content-Type', 'application/json');
+});
+
+When(/^attaches a valid (.+) payload$/, function (payloadType) {
+	this.requestPayload = getValidPayload(payloadType);
+
+	this.request
+		.send(JSON.stringify(this.requestPayload))
+		.set('Content-Type', 'application/json');
+});
+
+Then(/^the payload object should be added to the database, grouped under the "([a-zA-Z]+)" type$/, function (type) {
+	this.type = type;
+	client.get({
+		index: 'nodejstrainingproject',
+		type,
+		id: this.responsePayload,
+	}, function(error, response, status) {
+		if (error) {
+			console.log(error, response, status);
+		}
+	});
+});
+
+Then('the newly-created user should be deleted', function () {
+	client.delete({
+		index: 'nodejstrainingproject',
+		type: this.type,
+		id: this.responsePayload,
+	}, function(error, response, status) {
+		if (error) {
+			console.log(error, response, status);
+		}
+	});
 });

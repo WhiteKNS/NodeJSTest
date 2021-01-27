@@ -45,6 +45,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "body-parser": "^1.19.0",
+    "elasticsearch": "^16.7.2",
     "express": "^4.17.1",
     "superagent": "^6.1.0"
   }
