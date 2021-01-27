@@ -66,6 +66,13 @@ app.post('/users', (req, res) => {
     res.json({ message: 'The "Content-Type" header must always be "application/json"',});
     return;
   }
+
+  if (typeof req.body.email !== 'string' || typeof req.body.password !== 'string') {
+    res.status(400);
+    res.set('Content-Type', 'application/json');
+    res.json({ message: 'The email and password fields must be of type string' });
+    return;
+  }
 });
 
 app.use((err, req, res, next) => {
