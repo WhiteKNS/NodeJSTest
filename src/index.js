@@ -90,7 +90,7 @@ app.post('/users', (req, res) => {
   }
   // add a data to the index that has already been created
   client.index({
-    index: 'nodejstrainingproject',
+    index: process.env.ELASTICSEARCH_INDEX,
     type: 'user',
     body: req.body,
   }, function(error, response, status) {

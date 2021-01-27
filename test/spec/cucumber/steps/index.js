@@ -153,7 +153,7 @@ When(/^attaches a valid (.+) payload$/, function (payloadType) {
 Then(/^the payload object should be added to the database, grouped under the "([a-zA-Z]+)" type$/, function (type) {
 	this.type = type;
 	client.get({
-		index: 'nodejstrainingproject',
+		index: process.env.ELASTICSEARCH_INDEX,
 		type,
 		id: this.responsePayload,
 	}, function(error, response, status) {
@@ -165,7 +165,7 @@ Then(/^the payload object should be added to the database, grouped under the "([
 
 Then('the newly-created user should be deleted', function () {
 	client.delete({
-		index: 'nodejstrainingproject',
+		index: process.env.ELASTICSEARCH_INDEX,
 		type: this.type,
 		id: this.responsePayload,
 	}, function(error, response, status) {
