@@ -39,11 +39,22 @@ function checkContentTypeIsJson(req, res, next) {
     next();
 }
 
+
+
 app.use(checkEmptyPayload);
 app.use(checkContentTypeIsSet);
 app.use(checkContentTypeIsJson);
 app.use(bodyParser.json({ limit: 1e6 }));
 
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err && err.type === 'entity.parse.failed') {
+    res.status(400);
+    res.set('Content-Type', 'application/json');
+    res.json({ message: 'Payload should be in JSON format' });
+    return;
+  }
+  next();
+});
 
 app.post('/', (req, res) => {
     res.set('Content-Type', 'text/plain');
@@ -108,19 +119,8 @@ app.post('/users', (req, res) => {
 
 });
 
-app.use((err, req, res, next) => {
-    if (err instanceof SyntaxError && err.status === 400 && 'body' in err && err.type === 'entity.parse.failed') {
-      res.status(400);
-      res.set('Content-Type', 'application/json');
-      res.json({ message: 'Payload should be in JSON format' });
-      return;
-    }
-    next();
-});
-
-
 app.listen(process.env.SERVER_PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Hobnob API server listening on port ${process.env.SERVER_PORT}!`);
+  console.log(`nodejstestserver API server listening on port ${process.env.SERVER_PORT}!`);
 });
 
