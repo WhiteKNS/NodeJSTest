@@ -22,8 +22,6 @@ const client = new elasticsearch.Client({
 
 const app = express();
 
-
-
 app.use(bodyParser.json({ limit: 1e6 }));
 app.use(checkEmptyPayload);
 app.use(checkContentTypeIsSet);
