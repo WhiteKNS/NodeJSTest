@@ -12,7 +12,7 @@ Feature: the client sends a POST request to users with an payload that is not JS
 
     Examples:
     | payloadType   | statusCode    | message|
-    | non-JSON      | 415           | 'The "Content-Type" header must always be "application/json"' |
+    | non-JSON      | 415           | 'The "Content-Type" header must always be application/json' |
 
     Scenario Outline:: Malformed JSON Payload
     #If the client sends a POST request to /users with an payload that is malformed,

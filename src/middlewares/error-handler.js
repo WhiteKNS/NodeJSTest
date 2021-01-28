@@ -3,8 +3,10 @@ function errorHandler(err, req, res, next) {
         res.status(400);
         res.set('Content-Type', 'application/json');
         res.json({ message: 'Payload should be in JSON format' });
-        return;
+
+        return;;
     }
+
     next();
 }
 
