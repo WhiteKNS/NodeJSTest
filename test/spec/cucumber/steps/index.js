@@ -174,3 +174,10 @@ Then('the newly-created user should be deleted', function () {
 		}
 	});
 });
+
+When(/^attaches (.+) as the payload$/, function (payload) {
+	this.requestPayload = JSON.parse(payload);
+	this.request
+		.send(payload)
+		.set('Content-Type', 'application/json');
+});

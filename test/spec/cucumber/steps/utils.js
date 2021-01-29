@@ -5,7 +5,6 @@ function getValidPayload(type) {
             return {
                 "email": "e@gmail.com",
                 "password": "1"
-                //"password": "Content for key two",
             };
         default:
             return undefined;

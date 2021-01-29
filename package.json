@@ -4,7 +4,7 @@
   "description": "test NodeJS project",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && babel src -d dist",
+    "build": "rimraf dist && babel src -d dist --copy-files",
     "serve": "yarn run build && dotenv -e envs/.env node dist/index.js",
     "precommit": "yarn run lint",
     "test:e2e": "dotenv -e envs/test.env -e envs/.env cucumber-js -- test/spec/cucumber/features --require-module @babel/register --require test/spec/cucumber/steps",
@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "ajv": "^7.0.3",
     "body-parser": "^1.19.0",
     "elasticsearch": "^16.7.2",
     "express": "^4.17.1",

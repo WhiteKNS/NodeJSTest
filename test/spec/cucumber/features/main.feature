@@ -36,7 +36,7 @@ Scenario Outline: Request Payload with Properties of Unsupported Type
     And sends the request
     Then our API should respond with a 400 HTTP status code
     And the payload of the response should be a JSON object
-    And contains a message property which says "The email and password fields must be of type string"
+    And contains a message property which says "The '/<field>' field must be of type <type>"
 
     Examples:
     | field     | type    |
