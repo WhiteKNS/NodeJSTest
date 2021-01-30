@@ -4,8 +4,11 @@
 			"targets": {
 				"node": "current"
 			}
-		}]
+		}, "@babel/preset-env"]
 	],
+	"plugins": [
+        ["@babel/transform-runtime"]
+    ],
 	"env": {
 		"debug": {
 			"retainLines": true

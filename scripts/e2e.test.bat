@@ -9,4 +9,8 @@ for /f "tokens=3 delims=: " %%h in ('sc query "elasticsearch-service-x64" ^| fin
   )
 )
 
+curl --silent -o /dev/null -X DELETE "http://$ELASTICSEARCH_HOSTNAME:$ELASTICSEARCH_PORT/$ELASTICSEARCH_INDEX"
+yarn run test:e2e
+curl --silent -o /dev/null -X DELETE "http://$ELASTICSEARCH_HOSTNAME:$ELASTICSEARCH_PORT/$ELASTICSEARCH_INDEX"
+
 exit /B

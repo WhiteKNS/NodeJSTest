@@ -8,6 +8,8 @@
     "serve": "yarn run build && dotenv -e envs/.env node dist/index.js",
     "precommit": "yarn run lint",
     "test:e2e": "dotenv -e envs/test.env -e envs/.env cucumber-js -- test/spec/cucumber/features --require-module @babel/register --require test/spec/cucumber/steps",
+    "test:unit": "npx mocha 'src/**/*.test.js' --require @babel/register",
+    "test": "yarn run test:unit && yarn run test:e2e",
     "fix": "eslint src --fix",
     "lint": "eslint src",
     "watch": "nodemon -w src --exec yarn run serve"
@@ -31,6 +33,7 @@
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/node": "^7.12.10",
+    "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@babel/register": "^7.12.10",
     "cucumber": "^7.0.0-rc.0",
@@ -39,15 +42,18 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "husky": "^4.3.8",
+    "mocha": "^8.2.1",
     "nodemon": "^2.0.7",
     "rimraf": "^3.0.2"
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "@babel/runtime": "^7.12.5",
     "ajv": "^7.0.3",
     "body-parser": "^1.19.0",
     "elasticsearch": "^16.7.2",
     "express": "^4.17.1",
+    "latest-version": "^5.1.0",
     "superagent": "^6.1.0"
   }
 }
