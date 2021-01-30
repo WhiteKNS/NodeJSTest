@@ -1,4 +1,4 @@
-import ValidationError from '../../validators/errors/validation-error';
+import ValidationError from '../../validators/errors/validation-error/index';
 import validate from '../../validators/users/create';
 
 function create(req, db) {

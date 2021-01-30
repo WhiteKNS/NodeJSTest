@@ -1,5 +1,5 @@
 import assert from 'assert';
-import ValidationError from './validation-error';
+import ValidationError from './';
 
 
 describe('ValidationError', function () {

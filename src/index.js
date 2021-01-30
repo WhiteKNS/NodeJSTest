@@ -31,7 +31,7 @@ app.use(errorHandler);
 
 // Home page route.
 app.get('/', function (req, res) {
-  res.send('Wiki home page');
+  res.send('Nataliia\'s home page');
 });
 
 
