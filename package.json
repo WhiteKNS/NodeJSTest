@@ -10,6 +10,7 @@
     "test:e2e": "dotenv -e envs/test.env -e envs/.env cucumber-js -- test/spec/cucumber/features --require-module @babel/register --require test/spec/cucumber/steps",
     "test:unit": "npx mocha 'src/**/*.test.js' --require @babel/register",
     "test": "yarn run test:unit && yarn run test:e2e",
+    "test:integration": "dotenv -e envs/test.env -e envs/.env mocha -- 'src/**/*.integration.test.js' --require @babel/register",
     "fix": "eslint src --fix",
     "lint": "eslint src",
     "watch": "nodemon -w src --exec yarn run serve"
