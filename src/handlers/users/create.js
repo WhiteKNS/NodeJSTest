@@ -1,7 +1,7 @@
 
 
 function createUser(req, res, db, create, validator, ValidationError) {
-    create(req, db, validator, ValidationError).then((result) => {
+    return create(req, db, validator, ValidationError).then((result) => {
         res.status(201);
         res.set('Content-Type', 'text/plain');
         return res.send(result._id);
