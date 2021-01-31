@@ -8,11 +8,20 @@ import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
 import checkContentTypeIsJson from './middlewares/check-content-type-is-json';
 import errorHandler from './middlewares/error-handler';
 import createUser from './handlers/users/create';
+
+import ValidationError from './validators/errors/validation-error';
+import createUserHandler from './handlers/users/create';
+import createUserEngine from './engines/users/create'
 //import injectHandlerDependencies from './utils/inject-handler-dependencies'
 
-function injectHandlerDependencies(handler, db) {
-  return (req, res) => { handler(req, res, db); };
+function injectHandlerDependencies(handler, db, handlerToEngineMap, ValidationError) {
+  const engine = handlerToEngineMap.get(handler);
+  return (req, res) => { handler(req, res, db, engine, ValidationError); };
 }
+
+const handlerToEngineMap = new Map([
+  [createUserHandler, createUserEngine],
+]);
 
 const client = new elasticsearch.Client({
   host:
@@ -35,7 +44,7 @@ app.get('/', function (req, res) {
 });
 
 
-app.post('/users', injectHandlerDependencies(createUser, client));
+app.post('/users', injectHandlerDependencies(createUser, client, handlerToEngineMap, ValidationError));
 
 app.listen(process.env.SERVER_PORT, () => {
   // eslint-disable-next-line no-console
