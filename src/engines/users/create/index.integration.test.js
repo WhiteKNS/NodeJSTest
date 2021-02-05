@@ -1,13 +1,18 @@
+//import "@babel/polyfill";
+
 import assert from 'assert';
 import elasticsearch from 'elasticsearch';
 import ValidationError from '../../../validators/errors/validation-error';
 import createUserValidator from '../../../validators/users/create';
-import create from './';
+import deleteUserValidator from '../../../validators/users/delete'
+import create from '../create';
+import delete_user from '../delete';
 
 
 const db = new elasticsearch.Client({
 host:
-    `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
+    'http://localhost:9200',
+    //`${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
 });
 
 describe('User Create Engine', function () {
@@ -21,6 +26,9 @@ describe('User Create Engine', function () {
     describe('When invoked with valid req', function () {
         it('should return a success object containing the user ID', function () {
             const req = {
+                id: '1234567890',
+                index: 'nodetest',
+                type: 'test',
                 body: {
                     email: 'e@ma.il',
                     password: 'password',
@@ -34,4 +42,42 @@ describe('User Create Engine', function () {
             });
         });
     });
+});
+
+describe('User Delete  Engine', function () {
+    describe('When invoked with invalid req', function () {
+        it('should return promise that rejects with an instance of ValidationError', function () {
+            const req = {
+                id: '12345',
+                index: 'nodetest',
+                type: 'test',
+                body: null
+            };
+            delete_user(req, db, req.id, req.index, req.type, deleteUserValidator, ValidationError)
+             .catch(err => assert(err instanceof ValidationError));
+       });
+    });
+   describe('When invoked with valid req', function () {
+       it('should return a success object containing the user ID', function () {
+           const req = {
+               id: '12345',
+               index: 'nodetest',
+               type: 'test',
+               body: {
+                   email: 'e@ma.il',
+                   password: 'password',
+                   profile: {},
+               },
+               params: {
+                index: null
+            } 
+           };
+           create(req, db, deleteUserValidator, ValidationError);
+           delete_user(req, db, req.id, req.index, req.type, deleteUserValidator, ValidationError)
+           .then((result) => {
+               assert.equal(result.result, 'deleted');
+               assert.equal(typeof result._id, 'string');
+           });
+       });
+   });
 });

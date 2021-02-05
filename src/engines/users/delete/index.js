@@ -1,15 +1,17 @@
 
 
-function delete_user(req, db, validate, ValidationError) {
+function delete_user(req, db, id, index, type, validate, ValidationError) {
     const validationResults = validate(req);
     if (validationResults instanceof ValidationError) {
         return Promise.reject(validationResults);
     }
 
     // delete user's data
-    return db.indices.delete({
-        index: req.params.index
+    return db.delete({
+        index: index,
+		type: type,
+        id: id
     });
 }
 
-export default delete_user;
+module.exports = delete_user;

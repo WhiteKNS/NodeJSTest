@@ -1,3 +1,4 @@
+
 import '@babel/polyfill';
 import express from 'express';
 import bodyParser from 'body-parser';
@@ -8,42 +9,50 @@ import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
 import checkContentTypeIsJson from './middlewares/check-content-type-is-json';
 import errorHandler from './middlewares/error-handler';
 
-import createUser from './handlers/users/create';
-import createUserHandler from './handlers/users/create';
-import createUserEngine from './engines/users/create'
-import createUserValidator from './validators/users/create';
+import createUser from '../src/handlers/users/create';
 
-import deleteUser from './handlers/users/delete';
-import deleteUserHandler from './handlers/users/delete';
-import deleteUserEngine from './engines/users/delete'
-import deleteUserValidator from './validators/users/delete';
-import forbiddenRequest from './handlers/forbidden';
+import deleteUser from '../src/handlers/users/delete';
+import forbiddenRequest from '../src/handlers/forbidden';
 
-import ValidationError from './validators/errors/validation-error'
-import injectHandlerDependencies from './utils/inject-handler-dependencies'
+import getAllUsers from '../src/handlers/users/get/get_all_users.js';
+import getUserByID from '../src//handlers/users/get/get_user_by_id.js';
+import getHomePage from '../src/handlers/users/get/get_home_page.js';
 
+import updateUser from '../src//handlers/users/update';
+
+import ValidationError from '../src/validators/errors/validation-error'
+import injectHandlerDependencies from '../src/utils/inject-handler-dependencies'
+import deleteUpdateHandlerDependencies from '../src/utils/delete-update-handler-dependencies'
+
+import createUserHandler from '../src/handlers/users/create';
+import createUserEngine from '../src/engines/users/create'
+import createUserValidator from '../src/validators/users/create';
+
+import deleteUserHandler from '../src/handlers/users/delete';
+import deleteUserEngine from '../src/engines/users/delete'
+import deleteUserValidator from '../src/validators/users/delete';
 
 const handlerToEngineMap = new Map([
-  [createUserHandler, createUserEngine],
-]);
-
-const handlerToValidatorMap = new Map([
-  [createUserHandler, createUserValidator],
-]);
-
-const handlerToDeleteEngineMap = new Map([
-  [deleteUserHandler, deleteUserEngine],
-]);
-
-const handlerToDeleteValidatorMap = new Map([
-  [deleteUserHandler, deleteUserValidator],
-]);
+    [createUserHandler, createUserEngine],
+  ]);
+  
+  const handlerToValidatorMap = new Map([
+    [createUserHandler, createUserValidator],
+  ]);
+  
+  const handlerToDeleteEngineMap = new Map([
+    [deleteUserHandler, deleteUserEngine],
+  ]);
+  
+  const handlerToDeleteValidatorMap = new Map([
+    [deleteUserHandler, deleteUserValidator],
+  ]);
 
 const client = new elasticsearch.Client({
   host:
-    `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
+    'http://localhost:9200',
+    //`http://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
 });
-
 
 const app = express();
 
@@ -55,42 +64,28 @@ app.use(errorHandler);
 
 
 // Home page route.
-app.get('/', function (req, res) {
-    res.status(200);
-    res.set('Content-Type', 'text/plain');
-    res.send('Nataliia\'s home page');
-});
+app.get('/', getHomePage);
+
+app.get('/users', deleteUpdateHandlerDependencies(getAllUsers, client));
+app.get('/users/:id', deleteUpdateHandlerDependencies(getUserByID, client));
+
+app.put('/users/:id', deleteUpdateHandlerDependencies(updateUser, client));
 
 
 app.post('/users', injectHandlerDependencies(createUser, client, handlerToEngineMap, handlerToValidatorMap, ValidationError));
 
 app.delete('/', forbiddenRequest);
-
 app.delete('/users', forbiddenRequest);
-
 app.delete('/users/:id', injectHandlerDependencies(deleteUser, client, handlerToDeleteEngineMap, handlerToDeleteValidatorMap, ValidationError));
 
-
-/*app.delete('/users/:id', (req, res) => {
-    let req_index = req.params.index;
-    console.log(index);
-    client.indices.delete({
-        index: req_index
-    }, function(err, res) {
-        if (err) {
-          res.status(400);
-          res.set('Content-Type', 'application/json');
-          return res.json({ message: 'indices are not present' });
-        } else {
-          res.status(200);
-          res.set('Content-Type', 'application/json');
-          return res.json({ message: 'indices were deleted' });
-        }
-      });
-})*/
-
-app.listen(process.env.SERVER_PORT, () => {
+let server_port = '8086';
+app.listen(server_port, () => {
+  // allows to initiate the process as root using sudo
+  /*const sudoGid = parseInt(process.env.SUDO_GID);
+  const sudoUid = parseInt(process.env.SUDO_UID);
+  if (sudoGid) { process.setuid(sudoGid) }
+  if (sudoUid) { process.setuid(sudoUid) }*/
   // eslint-disable-next-line no-console
-  console.log(`nodejstestserver API server listening on port ${process.env.SERVER_PORT}!`);
+  console.log(`nodejstestserver API server listening on port ${server_port}!`);
 });
 

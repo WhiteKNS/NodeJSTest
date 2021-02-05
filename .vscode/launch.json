@@ -12,7 +12,7 @@
 		"name": "Babel Node",
 		"type": "node",
 		"request": "launch",
-		"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/babelnode",
+		"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/babel-node",
 		"env": {
 			"BABEL_ENV": "debug"
 		},

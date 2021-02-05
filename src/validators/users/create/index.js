@@ -1,8 +1,8 @@
 import Ajv from 'ajv';
-import profileSchema from '../../schema/users/profile.json';
-import createUserSchema from '../../schema/users/create.json';
-import ValidationError from '../errors/validation-error';
-import generateValidationErrorMessage from '../errors/messages/messages';
+import profileSchema from '../../../schema/users/profile.json';//'../../schema/users/profile.json';
+import createUserSchema from '../../../schema/users/create.json';
+import ValidationError from '../../../validators/errors/validation-error';
+import generateValidationErrorMessage from '../../errors/messages/messages.js';
 
 
 function validate(req) {

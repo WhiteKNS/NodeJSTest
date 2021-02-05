@@ -1,6 +1,7 @@
 import { stub} from 'sinon'
 import {assert} from 'sinon';
-import deleteUser from '../delete'
+
+import updateUser from '../update'
 import ValidationError from '../../../validators/errors/validation-error'
 
 let VALIDATION_ERROR_MESSAGE = 'TEST_ERROR';
@@ -12,12 +13,21 @@ const generateCreateStubs = {
     status: () => stub().resolves({statusCode: 200})
 };
 
-describe('deleteUser', function () {
+describe('updateUser', function () {
     // ...
     let req = {};
     let res = {};
-    let db = {};
     let resJsonReturnValue;
+
+    let dbIndexResult = {};
+    let dbDeleteesult = {};
+    let dbUpdateResult = {};
+    let validator;
+    let db = {
+        index: stub().resolves(dbIndexResult),
+        delete: stub().resolves(dbDeleteesult),
+        update: stub().resolves(dbUpdateResult)
+    };
 
     describe('When create rejects with an instance of Error', function () {
         beforeEach(function () {
@@ -25,18 +35,23 @@ describe('deleteUser', function () {
             res.set = stub();
             res.json = stub().returns(resJsonReturnValue);
 
-            let validator = stub();
-            let delete_user = generateCreateStubs.genericError();
-            let ValidationError = generateCreateStubs.validationError();
+            req.params = {};
+            req.body = {};
+            req.body.email = "email@gmail.com";
+            req.body.password = 'pass';
+            req.body.profile = {};
+            req.body.bio = {};
+            req.body.name = {};
+            req.params.id = '12345';
 
-            return deleteUser(req, res, db, delete_user, validator, ValidationError);
+            return updateUser(req, res, db);
         });
         describe('should call res.status()', function () {
             it('once', function () {
                 assert.calledOnce(res.status);
             });
-            it('with the argument 500', function () {
-                assert.calledWithExactly(res.status, 500);
+            it('with the argument 200', function () {
+                assert.calledWithExactly(res.status, 200);
             });
         });
         describe('should call res.set()', function () {
@@ -52,7 +67,7 @@ describe('deleteUser', function () {
                 assert.calledOnce(res.json);
             });
             it('with a validation error object', function () {
-                assert.calledWithExactly(res.json, { message: 'Internal Server Error' });
+                assert.calledWithExactly(res.json, { message: {} });
             });
         });
     });

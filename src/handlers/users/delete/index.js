@@ -11,9 +11,9 @@ function deleteUser(req, res, db, delete_user, validator, ValidationError) {
             res.set('Content-Type', 'application/json');
             return res.json({ message: err.message });
         } else {
-            res.status(403);
+            res.status(500);
             res.set('Content-Type', 'application/json');
-            return res.json({ message: err.message });
+            return res.json({ message: 'Internal Server Error' });
         }
        // throw err;
     }).catch(() => {

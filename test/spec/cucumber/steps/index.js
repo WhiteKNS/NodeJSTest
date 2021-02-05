@@ -7,7 +7,7 @@ import { getValidPayload, convertStringToArray } from './utils';
 
 const client = new elasticsearch.Client({
 	host:
-		`${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
+	'http://localhost:9200',
 });
 
 
@@ -153,7 +153,8 @@ When(/^attaches a valid (.+) payload$/, function (payloadType) {
 Then(/^the payload object should be added to the database, grouped under the "([a-zA-Z]+)" type$/, function (type) {
 	this.type = type;
 	client.get({
-		index: process.env.ELASTICSEARCH_INDEX,
+		//index: process.env.ELASTICSEARCH_INDEX,
+		index: 'nodejstrainingproject',
 		type,
 		id: this.responsePayload,
 	}, function(error, response, status) {
@@ -165,7 +166,7 @@ Then(/^the payload object should be added to the database, grouped under the "([
 
 Then('the newly-created user should be deleted', function () {
 	client.delete({
-		index: process.env.ELASTICSEARCH_INDEX,
+		index: 'nodejstrainingproject',//process.env.ELASTICSEARCH_INDEX,
 		type: this.type,
 		id: this.responsePayload,
 	}, function(error, response, status) {

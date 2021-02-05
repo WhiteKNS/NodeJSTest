@@ -23,4 +23,4 @@ function generateValidationErrorMessage(errors) {
     return 'The object is not valid';
  }
 
-export default generateValidationErrorMessage;
+ module.exports = generateValidationErrorMessage;
