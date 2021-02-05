@@ -14,9 +14,9 @@ import createUser from '../src/handlers/users/create';
 import deleteUser from '../src/handlers/users/delete';
 import forbiddenRequest from '../src/handlers/forbidden';
 
-import getAllUsers from '../src/handlers/users/get/get_all_users.js';
-import getUserByID from '../src//handlers/users/get/get_user_by_id.js';
-import getHomePage from '../src/handlers/users/get/get_home_page.js';
+import getAllUsers from './handlers/users/get/get_all_users';
+import getUserByID from './handlers/users/get/get_user_by_id';
+import getHomePage from './handlers/users/get/get_home_page';
 
 import updateUser from '../src//handlers/users/update';
 
@@ -78,7 +78,7 @@ app.delete('/', forbiddenRequest);
 app.delete('/users', forbiddenRequest);
 app.delete('/users/:id', injectHandlerDependencies(deleteUser, client, handlerToDeleteEngineMap, handlerToDeleteValidatorMap, ValidationError));
 
-let server_port = '8086';
+let server_port = '8088';
 app.listen(server_port, () => {
   // allows to initiate the process as root using sudo
   /*const sudoGid = parseInt(process.env.SUDO_GID);
