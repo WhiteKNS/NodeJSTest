@@ -13,23 +13,19 @@ node {
 			'ELASTICSEARCH_PORT=9200',
 			'ELASTICSEARCH_INDEX=test']) {
 				stage('Waiting') {
-					sh 'until curl --silent
-					$DB_PORT_9200_TCP_ADDR:$ELASTICSEARCH_PORT -w "" -o /dev/null; do
-					sleep 1; done'
+					bat 'until curl --silent $DB_PORT_9200_TCP_ADDR:$ELASTICSEARCH_PORT -w "" -o /dev/null; do sleep 1; done'
 				}
 				stage('Unit Tests') {
-					sh 'ELASTICSEARCH_HOSTNAME=$DB_PORT_9200_TCP_ADDR npm
-					run test:unit'
+					bat 'ELASTICSEARCH_HOSTNAME=$DB_PORT_9200_TCP_ADDR npm run test:unit'
 				}
 				stage('Integration Tests') {
-					sh 'ELASTICSEARCH_HOSTNAME=$DB_PORT_9200_TCP_ADDR npm
-					run test:integration'
+					bat 'ELASTICSEARCH_HOSTNAME=$DB_PORT_9200_TCP_ADDR npm run test:integration'
 				}
 				stage('End-to-End (E2E) Tests') {
-					sh 'ELASTICSEARCH_HOSTNAME=$DB_PORT_9200_TCP_ADDR npm
-					run test:e2e'
+					bat 'ELASTICSEARCH_HOSTNAME=$DB_PORT_9200_TCP_ADDR npm run test:e2e'
 				}
 			}
 		}
 	}
 }
+
