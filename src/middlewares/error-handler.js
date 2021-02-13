@@ -4,7 +4,7 @@ function errorHandler(err, req, res, next) {
         res.set('Content-Type', 'application/json');
         res.json({ message: 'Payload should be in JSON format' });
 
-        return;;
+        return;
     }
 
     next();

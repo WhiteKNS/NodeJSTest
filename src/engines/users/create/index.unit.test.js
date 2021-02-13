@@ -35,6 +35,16 @@ describe('User Create Engine', function () {
         {
             //promise.then(res => assert.strictEqual(res, dbIndexResult));
         });
+
+        it('should return the correct string when error.keyword is "pattern"', function () {
+            const errors = [{
+                keyword: 'pattern',
+                dataPath: '.test.path',
+            }];
+            //const actualErrorMessage = generateValidationErrorMessage(errors);
+            //const expectedErrorMessage = "The '.test.path' field should be a valid bcrypt digest";
+            //assert.equal(actualErrorMessage, expectedErrorMessage);
+        });
     });
     describe('When validator returns with an instance of ValidationError', function () {
         it('should reject with the ValidationError returned from validator', function () {

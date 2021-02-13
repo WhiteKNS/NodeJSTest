@@ -18,13 +18,18 @@ describe('User Delete Engine', function () {
         delete: sinon.stub().resolves(dbDeleteesult),
         unpeate: sinon.stub().resolves(dbUpdateResult)
     };
+
+    let salt = genSaltSync(10);
+    let password = crypto.randomBytes(32).toString('hex');
+    let digest_ = hashSync(password, salt);
+
     let mock = {
         index: 'test',
         type: 'user',
         id: '12345',
         body: {
             email: 'e@gmail.com',
-            password: 'p',
+            digest: digest_,
             name: {
                 first: 'Steve',
                 last: 'Li'

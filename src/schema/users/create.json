@@ -9,13 +9,14 @@
             "type": "string",
             "format": "email"
         },
-        "password": { 
-            "type": "string"
+        "digest": { 
+            "type": "string",
+            "pattern": "."
         },
         "profile": {
             "$ref": "profile.json#"
         }
     },
-    "required": ["email", "password"],
+    "required": ["email", "digest"],
     "additionalProperties": false
 }

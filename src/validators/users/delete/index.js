@@ -10,4 +10,4 @@ function validate(req) {
     return true;
 }
 
-module.exports = validate;
+export default validate;

@@ -1,6 +1,6 @@
 
 Feature: the client creates a POST request to users
-    Scenario Outline: Empty Payload
+    Scenario: Empty Payload
     When the client creates a POST request to users
     And attaches a generic <payloadType> payload
     And sends the request

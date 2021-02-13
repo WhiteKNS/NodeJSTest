@@ -2,7 +2,8 @@ function getUserByID (req, res, db) {
     db.get({
         type: 'user',
         index: 'nodejstrainingproject',
-        id: req.params.id
+        id: req.params.id,
+        _source_excludes: 'digest'
       }).then(function (response) {
         res.status(200).send(response);
       }, function (error) {

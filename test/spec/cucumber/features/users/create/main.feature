@@ -41,7 +41,7 @@ Feature: the client sends a POST request to users with an payload that is not JS
     Examples:
     | missingFields | message                           |
     | email         | The '.email' field is missing     |
-    | password      | The '.password' field is missing  |
+    | digest      | The '.digest' field is missing  |
 
 
     Scenario Outline: Request Payload with invalid email format
@@ -77,11 +77,11 @@ Feature: the client sends a POST request to users with an payload that is not JS
     And contains a message property which says "<message>"
 
     Examples:
-    | payload                                                                           | message                                                   |
-    | {"email":"e@ma.il","password":"abc","profile":{"foo":"bar"}}                      | The '/profile' object does not support the field 'foo'    |
-    | {"email":"e@ma.il","password":"abc","profile":{"name":{"first":"Jane", "a":"b"}}} | The '/profile/name' object does not support the field 'a' |
-    | {"email":"e@ma.il","password":"abc","profile":{"summary":0}}                      | The '/profile/summary' field must be of type string       |
-    | {"email":"e@ma.il","password":"abc","profile":{"bio":0}}                          | The '/profile/bio' field must be of type string           |
+    | payload                                                                                                                                   | message                                                   |
+    | {"email":"e@ma.il","digest":"$2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm","profile":{"foo":"bar"}}                       | The '/profile' object does not support the field 'foo'    |
+    | {"email":"e@ma.il","digest":"$2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm","profile":{"name":{"first":"Jane", "a":"b"}}}  | The '/profile/name' object does not support the field 'a' |
+    | {"email":"e@ma.il","digest":"$2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm","profile":{"summary":0}}                       | The '/profile/summary' field must be of type string       |
+    | {"email":"e@ma.il","digest":"$2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm","profile":{"bio":0}}                            | The '/profile/bio' field must be of type string           |
 
 
     Scenario Outline: Valid Profile
@@ -95,8 +95,8 @@ Feature: the client sends a POST request to users with an payload that is not JS
 
     Examples:
     | payload                                                                           |
-    | {"email":"e@ma.il","password":"password","profile":{}}                            |
-    | {"email":"e@ma.il","password":"password","profile":{"name":{}}}                   |
-    | {"email":"e@ma.il","password":"password","profile":{"name":{"first":"Daniel"}}}   |
-    #| {"email":"e@ma.il","password":"password","profile":{"bio":"bio"}}                 |
-    #| {"email":"e@ma.il","password":"password","profile":{"summary":"summary"}}         |
+    | {"email":"e@ma.il","digest":"$2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm","profile":{}}                            |
+    | {"email":"e@ma.il","digest":"$2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm","profile":{"name":{}}}                   |
+    | {"email":"e@ma.il","digest":"$2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm","profile":{"name":{"first":"Daniel"}}}   |
+    #| {"email":"e@ma.il","digest":"$2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm","profile":{"bio":"bio"}}                 |
+    #| {"email":"e@ma.il","digest":"$2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm","profile":{"summary":"summary"}}         |

@@ -6,17 +6,24 @@ function createUser(req, res, db, create, validator, ValidationError) {
         res.set('Content-Type', 'text/plain');
         return res.send(result._id);
     }, (err) => {
+        console.log(err);
         if (err instanceof ValidationError) {
             res.status(400);
             res.set('Content-Type', 'application/json');
             return res.json({ message: err.message });
         }
        throw err;
-    }).catch(() => {
+    }).catch((err) => {
+        console.log(err);
+        res.status(500);
+        return res.json({ message: 'Internal Server Error' });
+    });
+    
+    /*.catch(() => {
         res.status(500);
         res.set('Content-Type', 'application/json');
         return res.json({ message: 'Internal Server Error' });
-    });
+    });*/
 }
 
 export default createUser;

@@ -11,23 +11,57 @@ const client = new elasticsearch.Client({
 });
 
 
+//When('the client creates a (GET|POST|PATCH|PUT|DELETE|OPTIONS|HEAD) request to users', function (method) {
+//	this.request = superagent(method, `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
+//});
+
+const SERVER_PORT = '8088';
+const SERVER_HOST = 'localhost';
+
 When('the client creates a POST request to users', function () {
-	this.request = superagent('POST', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
+	this.request = superagent('POST', `${SERVER_HOST}:${SERVER_PORT}/users`);
+	//this.request = superagent('POST', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
 });
 
-When('the client creates a PATCH request to users', function () {
-	this.request = superagent('PATCH', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
+When('the client creates a GET request to salt', function () {
+	this.request = superagent('GET', `${SERVER_HOST}:${SERVER_PORT}/salt`);
+	//this.request = superagent('POST', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
 });
 
-When('the client creates a PUT request to users', function () {
-	this.request = superagent('PUT', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
+When('the client creates a PATCH request to (.+)', function (router) {
+	this.request = superagent('PATCH', `${SERVER_HOST}:${SERVER_PORT}/${router}`);
+});
+
+When('the client creates a PUT request to (.+)', function (router) {
+	this.request = superagent('PUT', `${SERVER_HOST}:${SERVER_PORT}/${router}`);
+});
+
+When('the client creates a GET request to (.+)', function (router) {
+	this.request = superagent('GET', `${SERVER_HOST}:${SERVER_PORT}/${router}`);
+});
+
+When('the client creates a POST request to login', function () {
+	this.request = superagent('POST', `${SERVER_HOST}:${SERVER_PORT}/login`);
+});
+
+When('the client creates a DELETE request to \\/users\\/:users.{int}.id', function (int) {
+	this.request = superagent('DELETE', `${SERVER_HOST}:${SERVER_PORT}/users/igRQRXcBCszJnAtvVlSO`);
+});
+
+When('the client creates a DELETE request to \\/users\\/:userId', function (int) {
+	this.request = superagent('DELETE', `${SERVER_HOST}:${SERVER_PORT}/users/:igRQRXcBCszJnAtvVlSO`);
 });
 
 When(/^attaches a generic (.+) payload$/, function (payloadType) {
 	switch (payloadType) {
 		case 'malformed':
+			let req = {
+				email: "zzzzzz@gmail.com",
+				digest: "abc",
+				name: null
+			};
 			this.request
-				.send('{"email": "academic13forte@gmail.com", name: }')
+				.send(req)
 				.set('Content-Type', 'application/json');
 			break;
 		case 'non-JSON':
@@ -95,7 +129,7 @@ When(/^without a (?:"|')([\w-]+)(?:"|') header set$/, function (headerName) {
 });
 
 When(/^attaches an? (.+) payload which is missing the ([a-zA-Z0-9, ]+) fields?$/, function (payloadType, missingFields) {
-	this.requestPayload = getValidPayload(payloadType);
+	this.requestPayload = getValidPayload(payloadType, client);
 
 	const fieldsToDelete = convertStringToArray(missingFields);
 
@@ -106,7 +140,7 @@ When(/^attaches an? (.+) payload which is missing the ([a-zA-Z0-9, ]+) fields?$/
 });
 
 When(/^attaches an? (.+) payload where the ([a-zA-Z0-9, ]+) fields? (?:is|are)(\s+not)? a ([a-zA-Z]+)$/, function (payloadType, fields, invert, type) {
-	this.requestPayload = getValidPayload(payloadType);
+	this.requestPayload = getValidPayload(payloadType, client);
 
 	const typeKey = type.toLowerCase();
 	const invertKey = invert ? 'not' : 'is';
@@ -129,7 +163,7 @@ When(/^attaches an? (.+) payload where the ([a-zA-Z0-9, ]+) fields? (?:is|are)(\
 });
 
 When(/^attaches an? (.+) payload where the ([a-zA-Z0-9, ]+) fields? (?:is|are) exactly (.+)$/, function (payloadType, fields, value) {
-	this.requestPayload = getValidPayload(payloadType);
+	this.requestPayload = getValidPayload(payloadType, client);
 
 	const fieldsToModify = convertStringToArray(fields);
 
@@ -143,7 +177,7 @@ When(/^attaches an? (.+) payload where the ([a-zA-Z0-9, ]+) fields? (?:is|are) e
 });
 
 When(/^attaches a valid (.+) payload$/, function (payloadType) {
-	this.requestPayload = getValidPayload(payloadType);
+	this.requestPayload = getValidPayload(payloadType, client);
 
 	this.request
 		.send(JSON.stringify(this.requestPayload))
@@ -178,7 +212,74 @@ Then('the newly-created user should be deleted', function () {
 
 When(/^attaches (.+) as the payload$/, function (payload) {
 	this.requestPayload = JSON.parse(payload);
+
 	this.request
 		.send(payload)
+		.set('Content-Type', 'application/json');
+});
+
+When('a new user is created with random password and email', function () {
+	this.requestPayload = getValidPayload('create user', client);
+
+	var chars = 'abcdefghijklmnopqrstuvwxyz1234567890';
+	var email_name = '';
+	for(var ii=0; ii<15; ii++){
+		email_name += chars[Math.floor(Math.random() * chars.length)];
+	}
+
+	this.requestPayload.email = email_name + '@domain.com';
+	console.log(this.requestPayload.email);
+	//this.request
+	//	.send(JSON.stringify(this.requestPayload))
+	//	.set('Content-Type', 'application/json');
+	// Write code here that turns the phrase above into concrete actions
+});
+
+
+When('set a valid Retrieve Salt query string', function () {
+	// Write code here that turns the phrase above into concrete actions
+	let pattern  = '^\$2a\$10\$[a-zA-Z0-9\.\/]{22}$/';
+	
+	// something is wrong with the regex here
+	const regex = new RegExp(this.requestPayload.digest);
+	let test_pattern = regex.test(pattern);
+	console.log(test_pattern, this.requestPayload.digest);
+
+	//return 'pending';
+});
+
+Then('the payload should be equal to context.salt', function () {
+	// Write code here that turns the phrase above into concrete actions
+	return 'pending';
+});
+
+Then(/^the response string should satisfy the regular expression (.+)$/, function (regex) {
+	const re = new RegExp(regex.trim().replace(/^\/|\/$/g, ''));
+	assert.equal(re.test(this.responsePayload), true);
+});
+
+When('{int} new user is created with random password and email', function (int) {
+	this.requestPayload = getValidPayload('create user', client);
+	var chars = 'abcdefghijklmnopqrstuvwxyz1234567890';
+	var email_name = '';
+	for(var ii=0; ii<15; ii++){
+		email_name += chars[Math.floor(Math.random() * chars.length)];
+	}
+
+	this.requestPayload.email = email_name + '@domain.com';
+
+	//console.log('111111111111', this.requestPayload.email);
+});
+
+When('saves the response text in the context under token', function () {
+	this.token = this.responsePayload;
+});
+
+When('set {string} as a query parameter', function (string) {
+	this.requestPayload = getValidPayload('login', client);
+	this.requestPayload.email = string;
+
+	this.request
+		.send(JSON.stringify(this.requestPayload))
 		.set('Content-Type', 'application/json');
 });

@@ -8,6 +8,9 @@ import deleteUserValidator from '../../../validators/users/delete'
 import create from '../create';
 import delete_user from '../delete';
 
+import { genSaltSync, hashSync } from 'bcryptjs';
+import crypto from 'crypto';
+
 
 const db = new elasticsearch.Client({
 host:
@@ -25,13 +28,17 @@ describe('User Create Engine', function () {
      });
     describe('When invoked with valid req', function () {
         it('should return a success object containing the user ID', function () {
+            let salt = genSaltSync(10);
+            let password = crypto.randomBytes(32).toString('hex');
+            let digest_ = hashSync(password, salt);
+
             const req = {
                 id: '1234567890',
                 index: 'nodetest',
                 type: 'test',
                 body: {
-                    email: 'e@ma.il',
-                    password: 'password',
+                    email: 'e@gmail.com',
+                    digest: digest_,
                     profile: {},
                 },
             };
@@ -59,13 +66,16 @@ describe('User Delete  Engine', function () {
     });
    describe('When invoked with valid req', function () {
        it('should return a success object containing the user ID', function () {
+        let salt = genSaltSync(10);
+        let password = crypto.randomBytes(32).toString('hex');
+        let digest_ = hashSync(password, salt);
            const req = {
                id: '12345',
                index: 'nodetest',
                type: 'test',
                body: {
-                   email: 'e@ma.il',
-                   password: 'password',
+                   email: 'e@gmail.com',
+                   digest: digest_,
                    profile: {},
                },
                params: {

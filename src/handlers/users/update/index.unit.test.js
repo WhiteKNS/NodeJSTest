@@ -35,10 +35,14 @@ describe('updateUser', function () {
             res.set = stub();
             res.json = stub().returns(resJsonReturnValue);
 
+            let salt = genSaltSync(10);
+            let password = crypto.randomBytes(32).toString('hex');
+            let digest_ = hashSync(password, salt);
+
             req.params = {};
             req.body = {};
             req.body.email = "email@gmail.com";
-            req.body.password = 'pass';
+            req.body.digest = digest_;
             req.body.profile = {};
             req.body.bio = {};
             req.body.name = {};

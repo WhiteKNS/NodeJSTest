@@ -30,23 +30,52 @@ import createUserValidator from '../src/validators/users/create';
 
 import deleteUserHandler from '../src/handlers/users/delete';
 import deleteUserEngine from '../src/engines/users/delete'
-import deleteUserValidator from '../src/validators/users/delete';
+import deleteUserValidator from './validators/users/delete';
+
+import { getSalt } from 'bcryptjs';
+import retrieveSaltHandler from './handlers/auth/salt/retrieve'
+import retrieveSaltEngine from './engines/auth/salt/retrieve';
+import generateFakeSalt from './utils/generate-fake-salt';
+
+import loginValidator from './validators/auth/login';
+import loginHandler from './handlers/auth/login';
+import loginEngine from './engines/auth/login';
+
+import authenticate from './middlewares/authenticate';
+
+import sign from 'jsonwebtoken';
 
 const handlerToEngineMap = new Map([
     [createUserHandler, createUserEngine],
+    [loginHandler, loginEngine],
+
+    [deleteUserHandler, deleteUserEngine],
+    [retrieveSaltHandler, retrieveSaltEngine],
   ]);
   
   const handlerToValidatorMap = new Map([
     [createUserHandler, createUserValidator],
-  ]);
-  
-  const handlerToDeleteEngineMap = new Map([
-    [deleteUserHandler, deleteUserEngine],
-  ]);
-  
-  const handlerToDeleteValidatorMap = new Map([
+    [loginHandler, loginValidator],
+
     [deleteUserHandler, deleteUserValidator],
+    [retrieveSaltHandler, createUserValidator],
   ]);
+  
+  //const handlerToDeleteEngineMap = new Map([
+  //  [deleteUserHandler, deleteUserEngine],
+  //]);
+  
+  //const handlerToDeleteValidatorMap = new Map([
+  //  [deleteUserHandler, deleteUserValidator],
+  //]);
+
+ // const handlerSalt = new Map([
+ //   [retrieveSaltHandler, retrieveSaltEngine],
+ // ]);
+
+  //const handlerToSaltMap = new Map([
+  //  [retrieveSaltHandler, createUserValidator],
+  //]);
 
 const client = new elasticsearch.Client({
   host:
@@ -62,6 +91,8 @@ app.use(checkContentTypeIsSet);
 app.use(checkContentTypeIsJson);
 app.use(errorHandler);
 
+app.use(authenticate);
+
 
 // Home page route.
 app.get('/', getHomePage);
@@ -69,14 +100,17 @@ app.get('/', getHomePage);
 app.get('/users', deleteUpdateHandlerDependencies(getAllUsers, client));
 app.get('/users/:id', deleteUpdateHandlerDependencies(getUserByID, client));
 
+app.get('/salt', injectHandlerDependencies(retrieveSaltHandler, client, handlerToEngineMap, handlerToValidatorMap,/*handlerSalt, handlerToSaltMap,*/ ValidationError, getSalt, generateFakeSalt));
+
 app.put('/users/:id', deleteUpdateHandlerDependencies(updateUser, client));
 
 
 app.post('/users', injectHandlerDependencies(createUser, client, handlerToEngineMap, handlerToValidatorMap, ValidationError));
+app.post('/login', injectHandlerDependencies(loginHandler, client, handlerToEngineMap, handlerToValidatorMap, ValidationError, sign));
 
 app.delete('/', forbiddenRequest);
 app.delete('/users', forbiddenRequest);
-app.delete('/users/:id', injectHandlerDependencies(deleteUser, client, handlerToDeleteEngineMap, handlerToDeleteValidatorMap, ValidationError));
+app.delete('/users/:id', injectHandlerDependencies(deleteUser, client, handlerToEngineMap, handlerToValidatorMap,/*handlerToDeleteEngineMap, handlerToDeleteValidatorMap,*/ ValidationError));
 
 let server_port = '8088';
 app.listen(server_port, () => {
@@ -87,5 +121,6 @@ app.listen(server_port, () => {
   if (sudoUid) { process.setuid(sudoUid) }*/
   // eslint-disable-next-line no-console
   console.log(`nodejstestserver API server listening on port ${server_port}!`);
+  console.log(`nodejstestserver API server listening on port(env file log)${process.env.SERVER_PORT}!`);
 });
 
