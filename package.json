@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf dist && babel src -d dist --copy-files",
-    "serve": "yarn run build && dotenv -e envs/.env node dist/index.js",
+    "dev:serve": "yarn run build && copy spec\\openapi\\NodeJSTrainingProject.yaml dist\\openapi.yaml && dotenv -e envs\\.env node dist/index.js",
+    "serve": "yarn run build && copy spec\\openapi\\NodeJSTrainingProject.yaml dist\\openapi.yaml && dotenv -e envs\\.env pm2 start dist/index.js",
     "precommit": "yarn run lint",
     "test:e2e": "dotenv -e envs/test.env -e envs/.env cucumber-js -- test/spec/cucumber/features --require-module @babel/register --require test/spec/cucumber/steps",
     "test:unit": "npx mocha 'src/**/*.test.js' --require @babel/register",
@@ -17,7 +18,10 @@
     "test:serve": "dotenv -e envs/test.env -e envs/.env babel-node src/index.js",
     "fix": "eslint src --fix",
     "lint": "eslint src",
-    "watch": "nodemon -w src --exec yarn run serve"
+    "watch": "nodemon -w src --exec yarn run serve",
+    "docs:update": "git submodule foreach --recursive git reset --hard && git submodule update --init --recursive && yarn run docs:format",
+    "docs:serve": "yarn run http-server docs/dist/ -p 8000",
+    "docs:format": "dotenv -e envs/.env ./scripts/swagger-ui/format.sh"
   },
   "repository": {
     "type": "git",
@@ -46,6 +50,7 @@
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
+    "http-server": "^0.12.3",
     "husky": "^4.3.8",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",

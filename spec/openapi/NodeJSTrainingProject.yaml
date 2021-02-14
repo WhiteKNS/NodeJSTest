@@ -1,0 +1,242 @@
+openapi: "3.0.0"
+    info:
+        title: NodeJSTestProject User Directory
+        version: "1.0.0"
+        contact:
+            name: Support
+            email: my_email@gmail.com
+servers:
+    - url: http://localhost:8080/
+        description: Local Development Server
+tags:
+    - name: Authentication
+        description: Authentication-related endpoints
+    - name: Users
+        description: User-related endpoints
+    - name: Profile
+        description: Profile-related endpoints
+ 
+components:
+    schemas:
+        profile:
+            title: User Profile
+            type: object
+                properties:
+                    bio:
+                        type: string
+                    summary:
+                        type: string
+                    name:
+                        type: object
+                        properties:
+                            first:
+                                type: string
+                            middle:
+                                type: string
+                            last:
+                                type: string
+            additionalProperties: false
+        UserLimited:
+            title: Retrieve User Response Payload Schema
+            description: An User object with the digest field removed
+            properties:
+                email:
+                    type: string
+                    format: email
+                profile:
+                    $ref: '#/components/schemas/Profile'
+            additionalProperties: false
+            required:
+                - email
+                - profile
+        Error:
+            properties:
+                message:
+                    description: Error message
+                    type: string
+    responses:
+        SaltRetrieved: 
+            description: Salt Retrieved
+            content:
+                text/plain:
+                    schema:
+                        type: string
+        EmailNotSpecified:
+            description: Email query parameter not specified
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        ErrorInternalServer:                
+            description: Internal Server Error
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        UserCreated:
+            description: Created
+            content:
+                text/plain:
+                    schema:
+                        type: string
+        ErrorBadRequest:
+            description: Bad Request
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        ErrorUnsupportedMediaType:
+            description: Unsupported Media Type
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        UserRetrieved:
+            description: User Retrieved
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UserLimited'
+        ErrorNotFound:
+            description: Not Found
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        Success:
+            description: Success
+        ErrorUnauthorized:
+            description: Unauthorized
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        securitySchemes:
+            token:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            
+paths:
+    /salt:
+        get:
+            tags:
+                - Authentication
+            summary: Returns the salt of a user based on the user's email
+            description:    Even if there are no users with the specified
+                            email, this endpoint will still return with a salt. This is to prevent
+                            the API leaking information about which email addresses are used to
+                            register on the platform.
+            parameters:
+                - name: email
+                    in: query
+                    description: The email of the user to retrieve the salt for
+                    required: true
+                    schema:
+                        type: string
+                        format: email
+            responses:
+                '200':
+                    $ref: '#/components/responses/SaltRetrieved'
+                '400':
+                    $ref: '#/components/responses/EmailNotSpecified'
+                '500':
+                    $ref: '#/components/responses/ErrorInternalServer'
+    /users:
+        post:
+            tags:
+                - Users
+            summary: Creates a New User
+            responses:
+                '201':
+                    $ref: '#/components/responses/UserCreated'
+                '400':
+                    $ref: '#/components/responses/ErrorBadRequest'
+                '415':
+                    $ref: '#/components/responses/ErrorUnsupportedMediaType'
+                '500':
+                    $ref: '#/components/responses/ErrorInternalServer'
+            requestBody:
+                description: The New User object
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                email:
+                                    type: string
+                                    format: email
+                                digest:
+                                    type: string
+                                    pattern: ^\\$2[aby]?\\$\\d{1,2}\\$[.\\/A-Zaz0-9]{53}$
+                                profile:
+                                    $ref: '#/components/schemas/profile'
+                            additionalProperties: false
+                            required:
+                                - email
+                                - digest
+                        example:
+                            email: a@gmail.com
+                            digest: $2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm
+                            profile:
+                                bio:    Nataliia is a species of C++ developer. In 2016, Nataliia decided to change her profession.
+                                        framework.
+                                summary: C++ Developer
+                                name:
+                                    first: Nataliia
+                                    last: K
+    /users/{userId}:
+        get:
+            tags:
+                - Users
+            summary: Retrieves details of a single User
+            parameters:
+                - name: userId
+                    in: path
+                    description: ID of the User to retrieve
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    $ref: '#/components/responses/UserRetrieved'
+                '400':
+                    $ref: '#/components/responses/ErrorBadRequest'
+                '404':
+                    $ref: '#/components/responses/ErrorNotFound'
+                '500':
+                    $ref: '#/components/responses/ErrorInternalServer'
+    /users/{userId}/profile:
+        put:
+            tags:
+                - Profile
+            summary: Replaces the Profile of the User with a new Profile
+            security:
+                - token: []
+            parameters:
+                - name: userId
+                    in: path
+                    description: ID of the User
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                description: The New Profile object
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Profile"
+            responses:
+                '200':
+                    $ref: '#/components/responses/Success'
+                '400':
+                    $ref: '#/components/responses/ErrorBadRequest'
+                '401':
+                    $ref: '#/components/responses/ErrorUnauthorized'
+                '404':
+                    $ref: '#/components/responses/ErrorNotFound'
+                '415':
+                    $ref: '#/components/responses/ErrorUnsupportedMediaType'
+                '500':
+                    $ref: '#/components/responses/ErrorInternalServer'

@@ -1,0 +1,69 @@
+npx babel index.js -o compiled.js => allows you to run binaries install locally (within your project's node_modules directory, as opposed to globally)
+
+del dist\ && npx babel src -d dist
+
+yarn add husky --dev
+
+npx cucumber-js spec\cucumber\features
+npx cucumber-js spec\cucumber\features --require-module @babel/register --require spec\cucumber\steps
+
+run node --inspect
+
+netstat -ano | findstr :8080
+
+else {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Hello, Nataliia, Dear!');
+  }*
+  
+  cucumber-js -- test/spec/cucumber/features --require-module @babel/register --require test/spec/cucumber/steps
+  
+  
+  
+    client.index({
+    id: 0,
+    index: process.env.ELASTICSEARCH_INDEX,
+    type: 'string',
+    body: {
+        "email": 'email@gmail.com',
+        "password": 'pass'
+    }
+    })
+    .then(response => {
+        //return res.json({"message": "Indexing successful"})
+    })
+	
+	http://localhost:8181
+	curl --silent -o /dev/null -X DELETE "http://$ELASTICSEARCH_HOSTNAME:$ELASTICSEARCH_PORT/$ELASTICSEARCH_INDEX"
+	
+	curl --silent -o /dev/null -X DELETE "http://$localhost:$9200/$nodejstrainingproject"
+	
+	npx mocha "index.unit.test.js" ---require @babel/register -require @babel/register
+	
+	npx mocha "src/**/*.test.js" --require @babel/register
+	
+	"test:unit:coverage": "nyc --reporter=html --reporter=text yarn run test:unit",
+	
+	git commit --amend --reset-author
+	
+	"test:serve": "dotenv -e envs/test.env -e envs/.env babel-node src/index.js",
+	
+	npm config set proxy http://localhost:8086
+	npm config set https-proxy http://localhost:8086
+	
+	npx mocha 'src/**/*.test.js' --require @babel/register
+	
+	npx mocha '*.unit.test.js' --require @babel/register
+	
+	
+	dotenv -e envs/test.env -e envs/.env mocha -- 'src/**/*.unit.test.js' --require @babel/register
+	
+	
+	dotenv -e envs/test.env -e envs/.env mocha -- 'src/**/*.integration.test.js' --require @babel/register
+	
+	
+	chrome://inspect/#devices
+	
+	
+	"serve": "yarn run build && dotenv -e envs/.env node dist/index.js",
+	yarn run http-server docs/dist/ -p 8000

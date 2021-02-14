@@ -44,6 +44,7 @@ import loginEngine from './engines/auth/login';
 import authenticate from './middlewares/authenticate';
 
 import sign from 'jsonwebtoken';
+import fs from 'fs';
 
 const handlerToEngineMap = new Map([
     [createUserHandler, createUserEngine],
@@ -93,6 +94,25 @@ app.use(errorHandler);
 
 app.use(authenticate);
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:8000"); // update to match the domain you will make the request from
+  // `${process.env.SWAGGER_UI_PROTOCOL}://${process.env.SWAGGER_UI_HOSTNAME}:${process.env.SWAGGER_UI_PORT}`
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+app.get('/openapi.yaml', (req, res, next) => {
+    fs.readFile(`${__dirname}/openapi.yaml`, (err, file) => {
+      if (err) {
+        res.status(500);
+        res.end();
+        return next();
+      }
+      res.write(file);
+      res.end();
+      return next();
+    });
+});
 
 // Home page route.
 app.get('/', getHomePage);
