@@ -78,6 +78,18 @@ const handlerToEngineMap = new Map([
   //  [retrieveSaltHandler, createUserValidator],
   //]);
 
+const SWAGGER_UI_PROTOCOL='http'
+const SWAGGER_UI_HOSTNAME='127.0.0.1'
+const SWAGGER_UI_PORT='8000'
+
+const SERVER_EXTERNAL_PROTOCOL='http'
+const SERVER_EXTERNAL_HOSTNAME='api.hobnob.jenkins'
+const SERVER_EXTERNAL_PORT='80'
+
+const CLIENT_PROTOCOL='http'
+const CLIENT_HOSTNAME='127.0.0.1'
+const CLIENT_PORT='8200'
+
 const client = new elasticsearch.Client({
   host:
     'http://localhost:9200',
@@ -95,10 +107,28 @@ app.use(errorHandler);
 app.use(authenticate);
 
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:8000"); // update to match the domain you will make the request from
+  //res.header("Access-Control-Allow-Origin", "http://127.0.0.1:8000"); // update to match the domain you will make the request from
   // `${process.env.SWAGGER_UI_PROTOCOL}://${process.env.SWAGGER_UI_HOSTNAME}:${process.env.SWAGGER_UI_PORT}`
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+  //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+  /*const {
+    SWAGGER_UI_PROTOCOL, SWAGGER_UI_HOSTNAME, SWAGGER_UI_PORT,
+    CLIENT_PROTOCOL, CLIENT_HOSTNAME, CLIENT_PORT,
+    } = process.env;*/
+    const allowedOrigins = [
+      `${SWAGGER_UI_PROTOCOL}://${SWAGGER_UI_HOSTNAME}`,
+      `${SWAGGER_UI_PROTOCOL}://${SWAGGER_UI_HOSTNAME}:${SWAGGER_UI_PORT}`,
+      `${CLIENT_PROTOCOL}://${CLIENT_HOSTNAME}`,
+      `${CLIENT_PROTOCOL}://${CLIENT_HOSTNAME}:${CLIENT_PORT}`,
+    ];
+
+    if (allowedOrigins.includes(req.headers.origin)) {
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+    }
+
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+    next();
 });
 
 app.get('/openapi.yaml', (req, res, next) => {
